@@ -1,53 +1,53 @@
 void lightLED();
 void recvInfor();
-int receivedChar = 0;
-int receivedCom = 0;
-boolean newData = false;
-byte msg[2];
+char msg[6];
+int temp = 0;
+int humid = 0;
 
 void setup() {
 
   Serial.begin(9600);
 
-  pinMode(3, OUTPUT);
-//  pinMode(5, OUTPUT);
- // pinMode(6, OUTPUT);
-  
+  pinMode(3, OUTPUT);  
 }
 
 void loop() {
 
   recvInfo();
-  lightLED();
+ // lightLED();
   
 }
 
 void recvInfo() {
   int av = Serial.available();
-
-  if (av > 0) {
-    //byte msg[2] = {0};
-    for (int i = 0; i < 2; i++){
+    
+  if (av >= 6) {
+    for (int i = 0; i < 6; i++){
       msg[i] = Serial.read();
-      newData = true;
-      Serial.read();
     }
+    for (int i = 0; i < 6; i++){
+      if (msg[i] == 't'){
+        temp = (msg[i+1] - '0')*10 + (msg[i+2]- '0');
+       
+       }
+       if (msg[i] == 'h'){
+         humid = (msg[i+1] - '0')*10 + (msg[i+2]- '0');
+       }
+     }
+      lightLED(3);
   }
   
 }
 
-void lightLED() {
+void lightLED(int led) {
 
 
-  while(newData == true) {
     Serial.print("Temperature ");
-    Serial.println(msg[0]);
+    Serial.println(temp);
     Serial.print("Humidity ");
-    Serial.println(msg[1]);
-    digitalWrite(7, HIGH);
-   // delay(2000);
-   // digitalWrite(7, LOW);
-   newData = false;
-  }
+    Serial.println(humid);
+    digitalWrite(led, HIGH);
+    delay(2000);
+    digitalWrite(led, LOW);
   
 }
